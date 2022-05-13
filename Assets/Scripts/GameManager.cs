@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
@@ -9,53 +10,46 @@ public class GameManager : MonoBehaviour
     {
         InitBoards();
         mainCamera = Camera.main;
+        winmsg.SetActive(false);
     }
 
     void InitBoards() {
-        float offsetX = boardSizeX * boards[0].localScale.x / 4;
-        float offsetZ = boardSizeZ * boards[0].localScale.z / 4;
+        for(int i = 0; i < 3; i++) {
+            int x = i * 6 - 6;
+
+            BoardManager newBoard = Instantiate(boardPrefab, new Vector3(x, 0, 0), Quaternion.identity).GetComponent<BoardManager>();
+            boards[i] = newBoard;
+        }
+
+
+        float offsetX = boardSizeX * boards[0].transform.localScale.x / 4;
+        float offsetZ = boardSizeZ * boards[0].transform.localScale.z / 4;
 
         for(int board = 0; board < 3; board++) {
-            positions[board, 0, 0] = new Vector3(boards[board].position.x - 3*offsetX/2, boards[board].position.y, boards[board].position.z + 3*offsetZ/2);
+            coords[board, 0, 0] = new Vector3(boards[board].transform.position.x - 3*offsetX/2, boards[board].transform.position.y + offsetY, boards[board].transform.position.z + 3*offsetZ/2);
             for(int i = 0; i < 4; i++) {
                 if(i != 0) {
-                    positions[board, i, 0] = new Vector3(positions[board, i-1, 0].x, positions[board, i-1, 0].y, positions[board, i-1, 0].z - offsetZ);
-                    print($"new position at {positions[board, i, 0]}");
+                    coords[board, i, 0] = new Vector3(coords[board, i-1, 0].x, coords[board, i-1, 0].y, coords[board, i-1, 0].z - offsetZ);
                 }
                 for(int j = 1; j < 4; j++) {
-                    positions[board, i, j] = new Vector3(positions[board, i, j-1].x + offsetX, positions[board, i, j-1].y, positions[board, i, j-1].z);
-                    print($"new position at {positions[board, i, j]}");
+                    coords[board, i, j] = new Vector3(coords[board, i, j-1].x + offsetX, coords[board, i, j-1].y, coords[board, i, j-1].z);
                 }
             }
         }
 
         for (int board = 0; board < 3; board++) {
-            Vector3 playerPosition = positions[board, 0, 0];
-            playerPosition.y += offsetY;
-            GameObject playerPiece = Instantiate(playerPrefab, playerPosition, Quaternion.identity);
-            PieceController playerPiecePC = playerPiece.GetComponent<PieceController>();
-            playerPiecePC.position = new Position(board, 0, 0);
-            player.pieces.Add(playerPiecePC);
-
-            Vector3 enemyPosition = positions[board, 3, 3];
-            enemyPosition.y += offsetY;
-            GameObject enemyPiece = Instantiate(enemyPrefab, enemyPosition, Quaternion.identity);
-            PieceController enemyPiecePC = enemyPiece.GetComponent<PieceController>();
-            enemyPiecePC.position = new Position(board, 3, 3);
-            enemy.pieces.Add(enemyPiecePC);
+            AddPiece(new Position(board, 0, 0), true);
+            AddPiece(new Position(board, 3, 3), false);
         }
 
         for(int board = 0; board < 3; board++) {
-            Vector3 boardPosition = boards[board].position;
+            Vector3 boardPosition = boards[board].transform.position;
             boardPosition.y -= 1;
-            boardHighlights[board] = Instantiate(boardHighlightPrefab, boardPosition, Quaternion.identity);
-            boardHighlights[board].SetActive(false);
             for(int i = 0; i < 4; i++) {
                 for(int j = 0; j < 4; j++) {
-                    Vector3 position = positions[board, i, j];
-                    position.y += 1.5f;
-                    positionHighlights[board, i, j] = Instantiate(tileHighlightPrefab, position, Quaternion.identity);
-                    positionHighlights[board, i, j].SetActive(false);
+                    positionHighlights[board, i, j] = Instantiate(tileHighlightPrefab, coords[board, i, j], Quaternion.identity).GetComponent<HighlightController>();
+                    positionHighlights[board, i, j].gameObject.SetActive(false);
+                    positionHighlights[board, i, j].position = new Position(board, i, j);
                 }
             }
         }
@@ -63,21 +57,51 @@ public class GameManager : MonoBehaviour
 
     void ChangeTurn() {
         playerTurn = !playerTurn;
-        HighlightBoard(playerTurn ? player.focusBoard : enemy.focusBoard);
-    }
-
-    // Purely visual
-    void HighlightBoard(int board) {
-        boardHighlights[board].SetActive(!boardHighlights[board].activeSelf);
     }
 
     void HighlightPosition(Position p) {
-        positionHighlights[p.board, p.x, p.z].SetActive(!positionHighlights[p.board, p.x, p.z].activeSelf);
+        positionHighlights[p.board, p.x, p.z].gameObject.SetActive(!positionHighlights[p.board, p.x, p.z].gameObject.activeSelf);
     }
 
     // Finish the game when a player wins and the other loses
-    void Finish() {
+    void Finish(bool player) {
+        TextMeshPro text = winmsg.GetComponent<TextMeshPro>();
+        if(player) {
+            text.color = Color.blue;
+            text.text = "You won!";
+        } else {
+            text.color = Color.red;
+            text.text = "You lose!";
+        }
+        winmsg.SetActive(true);
+        Time.timeScale = 0;
+    }
 
+    public PieceController GetPiece(Position p) {
+        return pieces[p.board, p.x, p.z];
+    }
+
+    public HighlightController GetHighlight(Position p) {
+        return positionHighlights[p.board, p.x, p.z];
+    }
+
+    public Vector3 GetCoords(Position p) {
+        return coords[p.board, p.x, p.z];
+    }
+    
+    public PieceController AddPiece(Position p, bool isPlayer) {
+        PieceController pc = Instantiate(isPlayer ? playerPrefab : enemyPrefab, GetCoords(p), Quaternion.identity).GetComponent<PieceController>();
+        pc.position = p;
+        pc.Init(boards[p.board]);
+        pieces[pc.position.board, pc.position.x, pc.position.z] = pc;
+        return pc;
+    }
+
+    public void DeletePiece(Position p, PieceController piece) {
+        pieces[p.board, p.x, p.z] = null;
+        if(piece.player) boards[p.board].playerPieces.Remove(piece);
+        else boards[p.board].enemyPieces.Remove(piece);
+        Destroy(piece.gameObject);
     }
 
     void Update() {
@@ -87,15 +111,27 @@ public class GameManager : MonoBehaviour
             if (Physics.Raycast(ray, out hit)) {  
                 //Select stage
                 if ((hit.transform.tag == "Player" && playerTurn) || (hit.transform.tag == "Enemy" && !playerTurn)) {
-                    List<Position> moves = hit.transform.gameObject.GetComponent<PieceController>().GetMoves();
-                    foreach (Position move in moves) {
-                        HighlightPosition(move);
+                    PieceController pc = hit.transform.gameObject.GetComponent<PieceController>();
+                    HighlightController.DisableAll();
+                    if(!pc.target){
+                        if(target) target.target = false;
+                        target = pc;
+                        target.target = true;
+                        List<Position> moves = pc.GetMoves();
+                        foreach (Position move in moves) {
+                            HighlightPosition(move);
+                        }
+                    } else {
+                        target.target = false;
+                        target = null;
                     }
                 } else if (hit.transform.tag == "Highlight") {
-                    hit.transform.gameObject.SetActive(false);
+                    HighlightController.DisableAll();
+                    target.MovePiece(hit.transform.gameObject.GetComponent<HighlightController>().position);
+                    playerTurn = !playerTurn;
                 }
-            }  
-        }  
+            }
+        }
     }
 
     [SerializeField]
@@ -104,18 +140,16 @@ public class GameManager : MonoBehaviour
     public int maxClones = 4;
     [SerializeField]
     float offsetY = 2;
-
+    BoardManager[] boards = new BoardManager[3];
+    public Vector3[,,] coords = new Vector3[3, 4, 4];
+    public PieceController[,,] pieces = new PieceController[3, 4, 4];
+    HighlightController[,,] positionHighlights = new HighlightController[3, 4, 4];
+    public bool playerTurn = true;
     [SerializeField]
-    Transform[] boards = new Transform[3];
-    public Vector3[,,] positions = new Vector3[3, 4, 4];
-    public PieceController[,,] tiles = new PieceController[3, 4, 4];
-    GameObject[,,] positionHighlights = new GameObject[3, 4, 4];
-    GameObject[] boardHighlights = new GameObject[3];
-    bool playerTurn = true;
+    public UserManager player, enemy;
     [SerializeField]
-    PlayerManager player, enemy;
-    [SerializeField]
-    GameObject playerPrefab, enemyPrefab, tileHighlightPrefab, boardHighlightPrefab;
+    public GameObject playerPrefab, enemyPrefab, tileHighlightPrefab, boardPrefab, winmsg;
     Camera mainCamera;
     List<Position> activeTiles;
+    PieceController target;
 }
