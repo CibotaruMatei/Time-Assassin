@@ -5,6 +5,29 @@ using TMPro;
 
 public class GameManager : MonoBehaviour
 {
+     [SerializeField]
+    float boardSizeX = 1, boardSizeZ = 1;
+    [SerializeField]
+    public int maxClones = 4;
+    [SerializeField]
+    float offsetY = 2;
+    BoardManager[] boards = new BoardManager[3];
+    public Vector3[,,] coords = new Vector3[3, 4, 4];
+    public PieceController[,,] pieces = new PieceController[3, 4, 4];
+    HighlightController[,,] positionHighlights = new HighlightController[3, 4, 4];
+    public bool playerTurn = true;
+    [SerializeField]
+    public UserManager player, enemy;
+    [SerializeField]
+    public GameObject playerPrefab, enemyPrefab, tileHighlightPrefab, boardPrefab, winmsg;
+
+    public GameObject board1, board2, board3;
+
+    Camera mainCamera;
+    List<Position> activeTiles;
+    PieceController target;
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -14,12 +37,10 @@ public class GameManager : MonoBehaviour
     }
 
     void InitBoards() {
-        for(int i = 0; i < 3; i++) {
-            int x = i * 6 - 6;
-
-            BoardManager newBoard = Instantiate(boardPrefab, new Vector3(x, 0, 0), Quaternion.identity).GetComponent<BoardManager>();
-            boards[i] = newBoard;
-        }
+       
+        boards[0] = board1.GetComponent<BoardManager>();
+        boards[1] = board2.GetComponent<BoardManager>();
+        boards[2] = board3.GetComponent<BoardManager>();
 
 
         float offsetX = boardSizeX * boards[0].transform.localScale.x / 4;
@@ -134,22 +155,5 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    [SerializeField]
-    float boardSizeX = 1, boardSizeZ = 1;
-    [SerializeField]
-    public int maxClones = 4;
-    [SerializeField]
-    float offsetY = 2;
-    BoardManager[] boards = new BoardManager[3];
-    public Vector3[,,] coords = new Vector3[3, 4, 4];
-    public PieceController[,,] pieces = new PieceController[3, 4, 4];
-    HighlightController[,,] positionHighlights = new HighlightController[3, 4, 4];
-    public bool playerTurn = true;
-    [SerializeField]
-    public UserManager player, enemy;
-    [SerializeField]
-    public GameObject playerPrefab, enemyPrefab, tileHighlightPrefab, boardPrefab, winmsg;
-    Camera mainCamera;
-    List<Position> activeTiles;
-    PieceController target;
+   
 }
