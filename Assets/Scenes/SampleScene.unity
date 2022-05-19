@@ -861,6 +861,14 @@ PrefabInstance:
       propertyPath: m_Constraints
       value: 126
       objectReference: {fileID: 0}
+    - target: {fileID: 4368154389582040652, guid: cebbde1c2d73645499b1335bb630ca86, type: 3}
+      propertyPath: m_Mass
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 4368154389582040652, guid: cebbde1c2d73645499b1335bb630ca86, type: 3}
+      propertyPath: m_AngularDrag
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cebbde1c2d73645499b1335bb630ca86, type: 3}
 --- !u!1001 &3536320648513506940
@@ -926,6 +934,14 @@ PrefabInstance:
       propertyPath: m_Convex
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 8100207437919752257, guid: 44939f6e6b7f2494181a2a431ceeaaac, type: 3}
+      propertyPath: m_Mass
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 8100207437919752257, guid: 44939f6e6b7f2494181a2a431ceeaaac, type: 3}
+      propertyPath: m_AngularDrag
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 44939f6e6b7f2494181a2a431ceeaaac, type: 3}
 --- !u!1001 &5741416307049666141
@@ -985,6 +1001,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5741416307398492141, guid: c8adf480227f4ef42b02cc9e8f2e553f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5909476917298521259, guid: c8adf480227f4ef42b02cc9e8f2e553f, type: 3}
+      propertyPath: m_Mass
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 5909476917298521259, guid: c8adf480227f4ef42b02cc9e8f2e553f, type: 3}
+      propertyPath: m_AngularDrag
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []

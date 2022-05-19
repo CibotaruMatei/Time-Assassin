@@ -1,0 +1,18 @@
+fileFormatVersion: 2
+guid: f7798c02da56f8f46989a25cf1338d6a
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - player: {instanceID: 0}
+  - enemy: {instanceID: 0}
+  - playerPrefab: {fileID: 594577309865699427, guid: bb318fc7cbd22b84196a49443463bae3, type: 3}
+  - enemyPrefab: {fileID: 6216273649454388571, guid: 0f146465b86fb4b48a20c80285027058, type: 3}
+  - tileHighlightPrefab: {fileID: 552273109697743179, guid: 70b33a250d8d3b94b91e5af679104d84, type: 3}
+  - boardPrefab: {fileID: 410493655025222955, guid: b26c27fd336fdd4489b88f5e8aa01e13, type: 3}
+  - winmsg: {fileID: 6841284635108056957, guid: 86c5fdda860e5f9439b451f782e2b8c6, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
