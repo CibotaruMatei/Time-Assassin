@@ -8,6 +8,8 @@ public class UserManager : MonoBehaviour
     void Start()
     {
         gm = GameObject.Find("GameManager").GetComponent<GameManager>();
+        if (!player)
+            ai = new AIManager(gm); 
     }
 
     void SwitchFocus(BoardManager board) {
@@ -18,6 +20,8 @@ public class UserManager : MonoBehaviour
     
     [SerializeField]
     bool player = true;
+
+    private AIManager ai;
     GameManager gm;
     public int remainingClones = 4;
     public BoardManager focusBoard;

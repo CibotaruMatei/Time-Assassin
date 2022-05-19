@@ -7,8 +7,8 @@ public class PieceController : MonoBehaviour
     GameManager gm;
     public BoardManager bm;
     public Position position;
-    public bool player;
-    public bool enemy;
+    public bool player = false; 
+    public bool enemy = false;
     public bool target = false;
     // Start is called before the first frame update
     void Start()
