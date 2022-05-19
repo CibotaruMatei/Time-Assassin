@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.1380322, g: 0.111857615, b: 0.053645805, a: 1}
+  m_IndirectSpecularColor: {r: 0.07451653, g: 0.061034612, b: 0.02254318, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -819,7 +819,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2694002100976798425, guid: cebbde1c2d73645499b1335bb630ca86, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 8.4
+      value: 0.85
       objectReference: {fileID: 0}
     - target: {fileID: 2694002100976798425, guid: cebbde1c2d73645499b1335bb630ca86, type: 3}
       propertyPath: m_LocalPosition.z
@@ -857,6 +857,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: table2
       objectReference: {fileID: 0}
+    - target: {fileID: 3288870274248963390, guid: cebbde1c2d73645499b1335bb630ca86, type: 3}
+      propertyPath: m_Constraints
+      value: 126
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cebbde1c2d73645499b1335bb630ca86, type: 3}
 --- !u!1001 &3536320648513506940
@@ -876,7 +880,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3536320649254600709, guid: 44939f6e6b7f2494181a2a431ceeaaac, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 9
+      value: 0.52
       objectReference: {fileID: 0}
     - target: {fileID: 3536320649254600709, guid: 44939f6e6b7f2494181a2a431ceeaaac, type: 3}
       propertyPath: m_LocalPosition.z
@@ -914,6 +918,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: table
       objectReference: {fileID: 0}
+    - target: {fileID: 4167208792844273688, guid: 44939f6e6b7f2494181a2a431ceeaaac, type: 3}
+      propertyPath: m_Constraints
+      value: 126
+      objectReference: {fileID: 0}
     - target: {fileID: 4632544400393950856, guid: 44939f6e6b7f2494181a2a431ceeaaac, type: 3}
       propertyPath: m_Convex
       value: 1
@@ -927,6 +935,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 5146194920408315801, guid: c8adf480227f4ef42b02cc9e8f2e553f, type: 3}
+      propertyPath: m_Constraints
+      value: 126
+      objectReference: {fileID: 0}
     - target: {fileID: 5741416307398058957, guid: c8adf480227f4ef42b02cc9e8f2e553f, type: 3}
       propertyPath: m_Name
       value: table3
