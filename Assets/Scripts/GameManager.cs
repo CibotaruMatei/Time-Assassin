@@ -22,6 +22,9 @@ public class GameManager : MonoBehaviour
     public GameObject playerPrefab, enemyPrefab, tileHighlightPrefab, boardPrefab, winmsg;
 
     public GameObject board1, board2, board3;
+    public bool gameFinished {get; set;} = false;
+
+    public bool tiltOption { get; set; }
 
     Camera mainCamera;
     List<Position> activeTiles;
@@ -34,13 +37,17 @@ public class GameManager : MonoBehaviour
         InitBoards();
         mainCamera = Camera.main;
         winmsg.SetActive(false);
+        tiltOption = true;
     }
 
     void InitBoards() {
        
         boards[0] = board1.GetComponent<BoardManager>();
+        boards[0].boardObject = board1;
         boards[1] = board2.GetComponent<BoardManager>();
+        boards[1].boardObject = board2;
         boards[2] = board3.GetComponent<BoardManager>();
+        boards[2].boardObject = board3;
 
 
         float offsetX = boardSizeX * boards[0].transform.localScale.x / 4;
@@ -68,7 +75,9 @@ public class GameManager : MonoBehaviour
             boardPosition.y -= 1;
             for(int i = 0; i < 4; i++) {
                 for(int j = 0; j < 4; j++) {
-                    positionHighlights[board, i, j] = Instantiate(tileHighlightPrefab, coords[board, i, j], Quaternion.identity).GetComponent<HighlightController>();
+                    var newInstanceHighlight = Instantiate(tileHighlightPrefab, coords[board, i, j], Quaternion.identity);
+                    newInstanceHighlight.transform.parent = boards[board].boardObject.transform;
+                    positionHighlights[board, i, j] = newInstanceHighlight.GetComponent<HighlightController>();
                     positionHighlights[board, i, j].gameObject.SetActive(false);
                     positionHighlights[board, i, j].position = new Position(board, i, j);
                 }
@@ -84,6 +93,8 @@ public class GameManager : MonoBehaviour
         positionHighlights[p.board, p.x, p.z].gameObject.SetActive(!positionHighlights[p.board, p.x, p.z].gameObject.activeSelf);
     }
 
+
+
     // Finish the game when a player wins and the other loses
     void Finish(bool player) {
         TextMeshPro text = winmsg.GetComponent<TextMeshPro>();
@@ -96,6 +107,7 @@ public class GameManager : MonoBehaviour
         }
         winmsg.SetActive(true);
         Time.timeScale = 0;
+        gameFinished = true;
     }
 
     public PieceController GetPiece(Position p) {
@@ -111,7 +123,9 @@ public class GameManager : MonoBehaviour
     }
     
     public PieceController AddPiece(Position p, bool isPlayer) {
-        PieceController pc = Instantiate(isPlayer ? playerPrefab : enemyPrefab, GetCoords(p), Quaternion.identity).GetComponent<PieceController>();
+        var newInstance = Instantiate(isPlayer ? playerPrefab : enemyPrefab, GetCoords(p), Quaternion.identity);
+        newInstance.transform.parent = boards[p.board].boardObject.transform;
+        PieceController pc = newInstance.GetComponent<PieceController>();
         pc.position = p;
         pc.Init(boards[p.board]);
         pieces[pc.position.board, pc.position.x, pc.position.z] = pc;
@@ -131,8 +145,12 @@ public class GameManager : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(ray, out hit)) {  
                 //Select stage
+
+                
+                 Debug.Log($"Raycast hitted: {hit.transform.ToString()}");
                 if ((hit.transform.tag == "Player" && playerTurn) || (hit.transform.tag == "Enemy" && !playerTurn)) {
                     PieceController pc = hit.transform.gameObject.GetComponent<PieceController>();
+                    
                     HighlightController.DisableAll();
                     if(!pc.target){
                         if(target) target.target = false;

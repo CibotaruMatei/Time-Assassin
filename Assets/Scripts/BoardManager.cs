@@ -25,5 +25,8 @@ public class BoardManager : MonoBehaviour
 
     bool playerFocus = false, enemyFocus = false;
     public GameObject highlight;
+
+    public GameObject boardObject {get; set;}
+
     public List<PieceController> playerPieces = new List<PieceController>(), enemyPieces = new List<PieceController>();
 }

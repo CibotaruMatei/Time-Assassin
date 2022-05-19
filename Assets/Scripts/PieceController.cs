@@ -4,6 +4,14 @@ using UnityEngine;
 
 public class PieceController : MonoBehaviour
 {
+    
+    GameManager gm;
+    public BoardManager bm;
+    public Position position;
+    public bool player;
+    public bool target = false;
+
+    
     // Start is called before the first frame update
     void Start()
     {
@@ -89,9 +97,4 @@ public class PieceController : MonoBehaviour
         return moves;
     }
 
-    GameManager gm;
-    public BoardManager bm;
-    public Position position;
-    public bool player;
-    public bool target = false;
 }
