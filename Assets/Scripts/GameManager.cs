@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     float offsetY = 2;
     BoardManager[] boards = new BoardManager[3];
-    public Vector3[,,] coords = new Vector3[3, 4, 4];
+    public Vector3[,,] coords;
     public PieceController[,,] pieces = new PieceController[3, 4, 4];
     HighlightController[,,] positionHighlights = new HighlightController[3, 4, 4];
     public bool playerTurn = true;
@@ -40,8 +40,28 @@ public class GameManager : MonoBehaviour
         tiltOption = true;
     }
 
+    void updateBoards() {
+        coords = new Vector3[3, 4, 4];
+        
+        float offsetX = boardSizeX * boards[0].transform.localScale.x / 4;
+        float offsetZ = boardSizeZ * boards[0].transform.localScale.z / 4;
+        
+        for(int board = 0; board < 3; board++) {
+            coords[board, 0, 0] = new Vector3(boards[board].transform.position.x - 3*offsetX/2, boards[board].transform.position.y + offsetY, boards[board].transform.position.z + 3*offsetZ/2);
+            for(int i = 0; i < 4; i++) {
+                if(i != 0) {
+                    coords[board, i, 0] = new Vector3(coords[board, i-1, 0].x, coords[board, i-1, 0].y, coords[board, i-1, 0].z - offsetZ);
+                }
+                for(int j = 1; j < 4; j++) {
+                    coords[board, i, j] = new Vector3(coords[board, i, j-1].x + offsetX, coords[board, i, j-1].y, coords[board, i, j-1].z);
+                }
+            }
+        }
+    }
+
     void InitBoards() {
        
+        coords = new Vector3[3, 4, 4];
         boards[0] = board1.GetComponent<BoardManager>();
         boards[0].boardObject = board1;
         boards[1] = board2.GetComponent<BoardManager>();
@@ -134,12 +154,20 @@ public class GameManager : MonoBehaviour
 
     public void DeletePiece(Position p, PieceController piece) {
         pieces[p.board, p.x, p.z] = null;
-        if(piece.player) boards[p.board].playerPieces.Remove(piece);
-        else boards[p.board].enemyPieces.Remove(piece);
+        if(piece.player) {
+            boards[p.board].playerPieces.Remove(piece);
+        }
+        else {
+            boards[p.board].enemyPieces.Remove(piece);
+        }
         Destroy(piece.gameObject);
     }
 
     void Update() {
+        
+        // Rigid bodies always change position in space
+        updateBoards();
+        
         if (Input.GetMouseButtonDown(0)) {
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
