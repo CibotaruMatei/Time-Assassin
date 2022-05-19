@@ -3,15 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class PieceController : MonoBehaviour
-{
-    
+{    
     GameManager gm;
     public BoardManager bm;
     public Position position;
     public bool player;
+    public bool enemy;
     public bool target = false;
-
-    
     // Start is called before the first frame update
     void Start()
     {
@@ -30,7 +28,6 @@ public class PieceController : MonoBehaviour
     }
 
     public void MovePiece(Position other) {
-        // TODO: check if moving to a past board, make a clone, and decrement player.remainingClones
         // Starea e invalida doar atunci cand o piesa e impinsa de pe tabla
         if(!Utilities.IsBounded(other)) {
             // Delete piece
@@ -53,8 +50,16 @@ public class PieceController : MonoBehaviour
 
         // add new piece in game
         gm.AddPiece(other, player);
-        // delete current piece and remove it
-        gm.DeletePiece(position, this);
+        // delete current piece and remove it only when moving into the future
+        if (other.board >= position.board) {
+            gm.DeletePiece(position, this);
+            return;
+        }
+        // decrement possible remainingClones
+        if (player)
+            gm.player.remainingClones--;
+        else
+            gm.enemy.remainingClones--;
     }
 
     public List<Position> GetMoves() {
@@ -65,13 +70,13 @@ public class PieceController : MonoBehaviour
 
             if(Utilities.IsBounded(neighborXpos)) {
                 PieceController neighborX = gm.GetPiece(neighborXpos);
-                if(neighborX == null || !neighborX.player) {
+                if(neighborX == null || !neighborX.player || !neighborX.enemy) {
                     moves.Add(neighborXpos); // left/right
                 }
             } 
             if(Utilities.IsBounded(neighborZpos)) {
                 PieceController neighborZ = gm.GetPiece(neighborZpos);
-                if(neighborZ == null || !neighborZ.player) {
+                if(neighborZ == null || !neighborZ.player || !neighborZ.enemy) {
                     moves.Add(neighborZpos); // down/up
                 }
             }
