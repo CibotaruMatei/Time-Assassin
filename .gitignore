@@ -74,3 +74,4 @@ crashlytics-build.properties
 *.meta
 /Assets/Imports/
 /Assets/TextMesh Pro/
+*packages-lock.json
