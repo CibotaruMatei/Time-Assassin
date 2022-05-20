@@ -83,4 +83,15 @@ public class Position {
     public Position Clone() {
         return new Position(this.board, this.x, this.z);
     }
+
+    public bool IsPushBounded(Position other)
+    {
+        if (x == other.x && z < other.z)
+            return z < 3;
+        else if (x == other.x && z > other.z)
+            return z > 0;
+        else if (x < other.x)
+            return x > 3;
+        return x > 0;
+    }
 }

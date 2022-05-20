@@ -8,8 +8,6 @@ public class UserManager : MonoBehaviour
     void Start()
     {
         gm = GameObject.Find("GameManager").GetComponent<GameManager>();
-        if (!player)
-            ai = new AIManager(gm); 
     }
 
     void SwitchFocus(BoardManager board) {

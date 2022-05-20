@@ -10,8 +10,8 @@ public class State {
     public int clones { get; }
     public Value[ , , ] tables { get; } = new Value[3, 4, 4];
     public Move move;
-    public int score;
     public State nextState;
+    public int score;
 
     public State(int depth, bool player, int clones) {
         this.depth = depth;
@@ -41,9 +41,37 @@ public class State {
         return newStates;
     }
 
-    public int GetScore()
+    public void GetScore()
     {
-        return 0;
+        List<Position> pieces = aiPieces;
+        List<Position> enemyPieces = playerPieces;
+        score = 0;
+        foreach (Position piece in pieces)
+        {
+            switch (piece.board)
+            {
+                case 0: score += 5;
+                    break;
+                case 1: score += 7;
+                    break;
+                case 2: score += 10;
+                    break;
+            }
+
+            foreach (Position neighbor in piece.Neighbors())
+            {
+                Value val = tables[neighbor.board, neighbor.x, neighbor.z];
+                if ((player && val == Value.Enemy) || (!player && val == Value.Player))
+                    score -= piece.IsPushBounded(neighbor) ? 2 : 5;
+                
+                foreach (Position neighbor2 in neighbor.Neighbors())
+                {
+                    Value val2 = tables[neighbor2.board, neighbor2.x, neighbor2.z];
+                    if ((player && val2 == Value.Enemy) || (!player && val2 == Value.Player))
+                        score += 2;
+                }
+            }
+        }
     }
     
     private List<Move> GetMoves() {

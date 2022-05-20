@@ -8,7 +8,7 @@ public class GameManager : MonoBehaviour
      [SerializeField]
     float boardSizeX = 1, boardSizeZ = 1;
     [SerializeField]
-    public int maxClones = 4;
+    public int aiMaxClones = 4;
     [SerializeField]
     float offsetY = 2;
     BoardManager[] boards = new BoardManager[3];
@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour
     HighlightController[,,] positionHighlights = new HighlightController[3, 4, 4];
     public bool playerTurn = true;
     [SerializeField]
-    public UserManager player, enemy;
+    public UserManager player;
     [SerializeField]
     public GameObject playerPrefab, enemyPrefab, tileHighlightPrefab, boardPrefab, winmsg;
 
@@ -25,6 +25,8 @@ public class GameManager : MonoBehaviour
     public bool gameFinished {get; set;} = false;
 
     public bool tiltOption { get; set; }
+
+    public AIManager enemy;
 
     Camera mainCamera;
     List<Position> activeTiles;
@@ -164,10 +166,17 @@ public class GameManager : MonoBehaviour
     }
 
     void Update() {
-        
+        if(playerTurn)
         // Rigid bodies always change position in space
         updateBoards();
-        
+        if (!playerTurn)
+        {
+            State newState = enemy.AiMove(aiMaxClones).nextState;
+            target = pieces[newState.move.from.board, newState.move.from.x, newState.move.from.z];
+            target.MovePiece(newState.move.to);
+            playerTurn = !playerTurn;
+            return;
+        }
         if (Input.GetMouseButtonDown(0)) {
             Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -175,8 +184,8 @@ public class GameManager : MonoBehaviour
                 //Select stage
 
                 
-                 Debug.Log($"Raycast hitted: {hit.transform.ToString()}");
-                if ((hit.transform.tag == "Player" && playerTurn) || (hit.transform.tag == "Enemy" && !playerTurn)) {
+                 Debug.Log($"Raycast hit: {hit.transform.ToString()}");
+                if (hit.transform.tag == "Player" && playerTurn) {
                     PieceController pc = hit.transform.gameObject.GetComponent<PieceController>();
                     
                     HighlightController.DisableAll();
@@ -188,7 +197,8 @@ public class GameManager : MonoBehaviour
                         foreach (Position move in moves) {
                             HighlightPosition(move);
                         }
-                    } else {
+                    }
+                    else {
                         target.target = false;
                         target = null;
                     }
@@ -196,7 +206,7 @@ public class GameManager : MonoBehaviour
                     HighlightController.DisableAll();
                     target.MovePiece(hit.transform.gameObject.GetComponent<HighlightController>().position);
                     playerTurn = !playerTurn;
-                }
+                } 
             }
         }
     }

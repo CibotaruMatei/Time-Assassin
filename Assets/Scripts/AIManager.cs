@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using UnityEditorInternal;
 using UnityEngine;
 
-public class AIManager
+public class AIManager : MonoBehaviour
 {
-    private GameManager gm;
-    public AIManager(GameManager gm)
+    GameManager gm;
+    public int remainingClones = 4;
+    void Start()
     {
-        this.gm = gm;
+        gm = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
-    public Move AiMove(int clones)
+    public State AiMove(int clones)
     {
         PieceController[,,] gamePieces = gm.pieces;
         State state = new State(3, false, clones);
@@ -33,23 +34,24 @@ public class AIManager
                     }
                 }
 
-        MinMax(state);
-        return state.move;
+        State newState = MinMax(state);
+        remainingClones = newState.clones;
+        return newState;
     }
 
     private State MinMax(State state) {
         if (state.depth == 0)
         {
-            state.score = state.GetScore();
+            state.GetScore();
             return state;
         }
         
-        List<State> moves = state.GetNewStates();
+        List<State> moves = state.GetNewStates().ConvertAll(state => MinMax(state));
 
         if (state.player)
-            state.nextState = Utilities.MaxValue(moves, x => x.score);
-        else
             state.nextState = Utilities.MinValue(moves, x => x.score);
+        else
+            state.nextState = Utilities.MaxValue(moves, x => x.score);
         state.score = state.nextState.score;
         
         return state;
