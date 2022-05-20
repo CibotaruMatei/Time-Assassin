@@ -18,6 +18,8 @@ public class UserManager : MonoBehaviour
     
     [SerializeField]
     bool player = true;
+
+    private AIManager ai;
     GameManager gm;
     public int remainingClones = 4;
     public BoardManager focusBoard;
