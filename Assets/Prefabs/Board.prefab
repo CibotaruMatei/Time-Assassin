@@ -140,6 +140,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: BoardHighlight
       objectReference: {fileID: 0}
+    - target: {fileID: 3652241790424028351, guid: 52065d0bce99f4c46a3ba6e871475210, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8942915984524601311, guid: 52065d0bce99f4c46a3ba6e871475210, type: 3}
       propertyPath: m_RootOrder
       value: 0

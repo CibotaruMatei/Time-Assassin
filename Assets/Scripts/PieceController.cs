@@ -5,6 +5,7 @@ using UnityEngine;
 public class PieceController : MonoBehaviour
 {    
     GameManager gm;
+    AIManager aim;
     public BoardManager bm;
     public Position position;
     public bool player = false; 
@@ -14,6 +15,7 @@ public class PieceController : MonoBehaviour
     void Start()
     {
         gm = GameObject.Find("GameManager").GetComponent<GameManager>();
+        aim = GameObject.Find("Enemy").GetComponent<AIManager>();
     }
 
     public void Init(BoardManager board) {
@@ -59,7 +61,7 @@ public class PieceController : MonoBehaviour
         if (player)
             gm.player.remainingClones--;
         else
-            gm.enemy.remainingClones--;
+            aim.remainingClones--;
     }
 
     public List<Position> GetMoves() {

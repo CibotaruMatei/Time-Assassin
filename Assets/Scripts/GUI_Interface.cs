@@ -48,7 +48,7 @@ public class GUI_Interface : MonoBehaviour
         int sx = 300;
         int sy = 30;
         var s = GUI.Button(new Rect(0, 0, 100, 30), "Skybox Menu");
-        if (s != null) {
+        if (s) {
             if(s) {
                 isActive = !isActive;
                 // Debug.LogError(Camera.main.pixelWidth);
