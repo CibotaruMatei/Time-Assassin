@@ -11,9 +11,9 @@ GameObject:
   - component: {fileID: 172155569293239609}
   - component: {fileID: 3766200844312978960}
   - component: {fileID: 1673426132823311165}
-  - component: {fileID: 3925924813477447573}
   - component: {fileID: 162967454667644523}
   - component: {fileID: 462981340523344437}
+  - component: {fileID: 3851847302369599204}
   m_Layer: 0
   m_Name: PlayerPiece
   m_TagString: Player
@@ -84,20 +84,6 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
---- !u!136 &3925924813477447573
-CapsuleCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 594577309865699427}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
 --- !u!114 &162967454667644523
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -114,6 +100,7 @@ MonoBehaviour:
   player: 1
   enemy: 0
   target: 0
+  pieceObject: {fileID: 0}
 --- !u!54 &462981340523344437
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -122,11 +109,25 @@ Rigidbody:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 594577309865699427}
   serializedVersion: 2
-  m_Mass: 1000
-  m_Drag: 500
-  m_AngularDrag: 5
+  m_Mass: 1
+  m_Drag: 1
+  m_AngularDrag: 1
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 126
+  m_Constraints: 90
   m_CollisionDetection: 0
+--- !u!136 &3851847302369599204
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 594577309865699427}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}

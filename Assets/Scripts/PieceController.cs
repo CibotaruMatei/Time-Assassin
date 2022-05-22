@@ -11,12 +11,19 @@ public class PieceController : MonoBehaviour
     public bool player = false; 
     public bool enemy = false;
     public bool target = false;
+
+    public GameObject pieceObject;
+
+
     // Start is called before the first frame update
+
+
     void Start()
     {
         gm = GameObject.Find("GameManager").GetComponent<GameManager>();
         aim = GameObject.Find("Enemy").GetComponent<AIManager>();
     }
+
 
     public void Init(BoardManager board) {
         bm = board;
@@ -53,6 +60,9 @@ public class PieceController : MonoBehaviour
         // add new piece in game
         gm.AddPiece(other, player);
         // delete current piece and remove it only when moving into the future
+        
+        //temporary
+        gm.DeletePiece(position, this);
         if (other.board >= position.board) {
             gm.DeletePiece(position, this);
             return;

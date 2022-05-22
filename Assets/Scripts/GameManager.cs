@@ -10,7 +10,7 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     public int aiMaxClones = 4;
     [SerializeField]
-    float offsetY = 2;
+    float offsetY = 500;
     BoardManager[] boards = new BoardManager[3];
     public Vector3[,,] coords;
     public PieceController[,,] pieces = new PieceController[3, 4, 4];
@@ -148,6 +148,7 @@ public class GameManager : MonoBehaviour
         var newInstance = Instantiate(isPlayer ? playerPrefab : enemyPrefab, GetCoords(p), Quaternion.identity);
         newInstance.transform.parent = boards[p.board].boardObject.transform;
         PieceController pc = newInstance.GetComponent<PieceController>();
+        pc.pieceObject = newInstance;
         pc.position = p;
         pc.Init(boards[p.board]);
         pieces[pc.position.board, pc.position.x, pc.position.z] = pc;
@@ -183,8 +184,6 @@ public class GameManager : MonoBehaviour
             if (Physics.Raycast(ray, out hit)) {  
                 //Select stage
 
-                
-                 Debug.Log($"Raycast hit: {hit.transform.ToString()}");
                 if (hit.transform.tag == "Player" && playerTurn) {
                     PieceController pc = hit.transform.gameObject.GetComponent<PieceController>();
                     
