@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviour
 
     public AIManager enemy;
 
-    Camera mainCamera;
+    public Camera mainCamera;
     List<Position> activeTiles;
     PieceController target;
 

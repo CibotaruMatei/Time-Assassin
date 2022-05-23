@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 public class PauseMenu : MonoBehaviour
 {
@@ -82,6 +83,12 @@ public class PauseMenu : MonoBehaviour
         GameIsPaused = !GameIsPaused;
         gm.InitBoards();
         SceneManager.LoadScene("gameScene");
+    }
+
+
+
+    public void TogglePostProcessing(bool toggle) {
+        gm.mainCamera.GetComponent<UniversalAdditionalCameraData>().renderPostProcessing = toggle;
     }
 
 
