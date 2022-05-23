@@ -10,6 +10,11 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     public int aiMaxClones = 1, aiDepth = 1;
 
+    public AudioSource myFX;
+    public AudioClip hoverFX;
+    public AudioClip clickFX;
+
+
     [SerializeField]
     float offsetY = 2;
     BoardManager[] boards = new BoardManager[3];
@@ -219,6 +224,7 @@ public class GameManager : MonoBehaviour
                 State newState = enemy.AiMove(aiMaxClones,aiDepth).nextState;
                 target = pieces[newState.move.from.board, newState.move.from.x, newState.move.from.z];
                 target.MovePiece(newState.move.to);
+                myFX.PlayOneShot(clickFX);
                 playerTurn = !playerTurn;
                 return;
             }
@@ -241,6 +247,7 @@ public class GameManager : MonoBehaviour
                             foreach (Position move in moves) {
                                 HighlightPosition(move);
                             }
+                            myFX.PlayOneShot(hoverFX);
                         }
                         else {
                             target.target = false;
@@ -249,6 +256,7 @@ public class GameManager : MonoBehaviour
                     } else if (hit.transform.tag == "Highlight") {
                         HighlightController.DisableAll();
                         target.MovePiece(hit.transform.gameObject.GetComponent<HighlightController>().position);
+                        myFX.PlayOneShot(clickFX);
                         playerTurn = !playerTurn;
                     } 
                 }
