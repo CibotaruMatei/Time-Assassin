@@ -6,27 +6,36 @@ public class AnimateWorld : MonoBehaviour {
 	// Use this for initialization
 
 
-	private float PlaneMaxRotateAngle = 8.0f;
+	private float PlaneMaxRotateAngle;
 	private bool reverseRotation = false;
 
 	private float rotationAngle = 0.0f;
 
-	
-	private float PlaneRotateSpeed = 0.1f;
-	private float skyRotateSpeed = 1.2f;
-	void Start () {
+	GameManager gm;
 
+	
+	private float PlaneRotateSpeed;
+	private float skyRotateSpeed = 1.2f;
+
+	private float updateRate;
+	void Start () {
+	gm = GameObject.Find("GameManager").GetComponent<GameManager>();
+	PlaneMaxRotateAngle = Random.Range((gm.tiltPower+4)/4.0f+1,(gm.tiltPower+4)/2.0f+3);
 	}
+
+
 	
 	private float lastUpdate = 0.0f;
 
 	// Update is called once per frame
 	void Update () {
-		
-		bool tiltOption = GameObject.Find("GameManager").GetComponent<GameManager>().tiltOption;
-		if(tiltOption && Time.time - lastUpdate > Random.Range(0.03f, 0.12f)) {
+
+		updateRate = (4 - (float)(gm.tiltPower)/5) * 0.12f; 
+		PlaneRotateSpeed = (gm.tiltPower+4) / 4.0f * 0.05f;
+		bool tiltOption = gm.tiltOption;
+		if(tiltOption && Time.time - lastUpdate > Random.Range(updateRate/4, updateRate)) {
 			lastUpdate = Time.time;
-			if(rotationAngle > 0 && rotationAngle < PlaneMaxRotateAngle) {
+			if(rotationAngle > 0.0f && rotationAngle < PlaneMaxRotateAngle) {
 				if(!reverseRotation) {
 					GameObject.Find("Plane").transform.Rotate(PlaneRotateSpeed,0,-PlaneRotateSpeed*0.6f);
 					rotationAngle += PlaneRotateSpeed;
@@ -48,8 +57,8 @@ public class AnimateWorld : MonoBehaviour {
 					rotationAngle -= PlaneRotateSpeed;
 				}	
 				// we returned to neutral state
-				if(!reverseRotation) {
-					PlaneMaxRotateAngle = Random.Range(PlaneMaxRotateAngle/2,PlaneMaxRotateAngle);
+				if(!reverseRotation) {					
+					PlaneMaxRotateAngle = Random.Range((gm.tiltPower+1)/4.0f+1,(gm.tiltPower+1)/2.0f+3);
 				}
 			}
 		}

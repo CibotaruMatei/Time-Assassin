@@ -8,9 +8,10 @@ public class GameManager : MonoBehaviour
      [SerializeField]
     float boardSizeX = 1, boardSizeZ = 1;
     [SerializeField]
-    public int aiMaxClones = 4;
+    public int aiMaxClones = 1, aiDepth = 1;
+
     [SerializeField]
-    float offsetY = 500;
+    float offsetY = 2;
     BoardManager[] boards = new BoardManager[3];
     public Vector3[,,] coords;
     public PieceController[,,] pieces = new PieceController[3, 4, 4];
@@ -19,12 +20,16 @@ public class GameManager : MonoBehaviour
     [SerializeField]
     public UserManager player;
     [SerializeField]
-    public GameObject playerPrefab, enemyPrefab, tileHighlightPrefab, boardPrefab, winmsg;
+    public GameObject playerPrefab, enemyPrefab, tileHighlightPrefab, boardPrefab, pauseMenuUI;
+
+    public GameObject winGameUI, loseGameUI;
 
     public GameObject board1, board2, board3;
-    public bool gameFinished {get; set;} = false;
 
-    public bool tiltOption { get; set; }
+    public bool tiltOption;
+
+    public int tiltPower = 3, SandsOfTime = 0, computerDifficulty = 0;
+
 
     public AIManager enemy;
 
@@ -38,7 +43,6 @@ public class GameManager : MonoBehaviour
     {
         InitBoards();
         mainCamera = Camera.main;
-        winmsg.SetActive(false);
         tiltOption = true;
     }
 
@@ -61,7 +65,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void InitBoards() {
+    public void InitBoards() {
        
         coords = new Vector3[3, 4, 4];
         boards[0] = board1.GetComponent<BoardManager>();
@@ -117,20 +121,6 @@ public class GameManager : MonoBehaviour
 
 
 
-    // Finish the game when a player wins and the other loses
-    void Finish(bool player) {
-        TextMeshPro text = winmsg.GetComponent<TextMeshPro>();
-        if(player) {
-            text.color = Color.blue;
-            text.text = "You won!";
-        } else {
-            text.color = Color.red;
-            text.text = "You lose!";
-        }
-        winmsg.SetActive(true);
-        Time.timeScale = 0;
-        gameFinished = true;
-    }
 
     public PieceController GetPiece(Position p) {
         return pieces[p.board, p.x, p.z];
@@ -166,49 +156,103 @@ public class GameManager : MonoBehaviour
         Destroy(piece.gameObject);
     }
 
-    void Update() {
-        if(playerTurn)
-        // Rigid bodies always change position in space
-        updateBoards();
-        if (!playerTurn)
-        {
-            State newState = enemy.AiMove(aiMaxClones).nextState;
-            target = pieces[newState.move.from.board, newState.move.from.x, newState.move.from.z];
-            target.MovePiece(newState.move.to);
-            playerTurn = !playerTurn;
-            return;
-        }
-        if (Input.GetMouseButtonDown(0)) {
-            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            if (Physics.Raycast(ray, out hit)) {  
-                //Select stage
 
-                if (hit.transform.tag == "Player" && playerTurn) {
-                    PieceController pc = hit.transform.gameObject.GetComponent<PieceController>();
-                    
-                    HighlightController.DisableAll();
-                    if(!pc.target){
-                        if(target) target.target = false;
-                        target = pc;
-                        target.target = true;
-                        List<Position> moves = pc.GetMoves();
-                        foreach (Position move in moves) {
-                            HighlightPosition(move);
-                        }
-                    }
-                    else {
-                        target.target = false;
-                        target = null;
-                    }
-                } else if (hit.transform.tag == "Highlight") {
-                    HighlightController.DisableAll();
-                    target.MovePiece(hit.transform.gameObject.GetComponent<HighlightController>().position);
-                    playerTurn = !playerTurn;
-                } 
-            }
+    private float timeElapsed;
+    private float computerThinkTimeDelay;
+
+    void adjustNewSettings() {
+         
+
+        switch(computerDifficulty) {
+            case 0:
+            aiMaxClones=1;
+            aiDepth = 1;
+            computerThinkTimeDelay=3.5f;
+            break;
+            case 1:
+            aiMaxClones=2;
+            aiDepth = 2;
+            computerThinkTimeDelay=1.5f;
+            break;
+            case 2:
+            aiMaxClones=4;
+            aiDepth = 3;
+            computerThinkTimeDelay=0.5f;
+            break;
         }
     }
 
-   
+    void checkWinCondition() {
+        int enemyEmptyBoards = 0;
+        int playerEmptyBoards = 0;
+        foreach(var board in boards) {
+            if(board.playerPieces.Count == 0) {
+                playerEmptyBoards++;
+            }
+            if(board.enemyPieces.Count == 0) {
+                enemyEmptyBoards++;
+            }
+        }
+        if(playerEmptyBoards >= 2) {
+            loseGameUI.SetActive(true);
+            Time.timeScale = 0f;
+            PauseMenu.GameIsPaused = !PauseMenu.GameIsPaused;
+        }
+        else if(enemyEmptyBoards >= 2) {
+            
+            winGameUI.SetActive(true);
+            Time.timeScale = 0f;
+            PauseMenu.GameIsPaused = !PauseMenu.GameIsPaused;
+        }
+    }
+    void Update() {
+        if (!PauseMenu.GameIsPaused) {
+            adjustNewSettings();
+            checkWinCondition();
+            if(playerTurn) {
+                // Rigid bodies always change position in space
+                updateBoards();
+            }
+            else if (!playerTurn && Time.time - timeElapsed > Random.Range(computerThinkTimeDelay/3.5f,computerThinkTimeDelay))
+            {
+                timeElapsed = Time.time;
+                State newState = enemy.AiMove(aiMaxClones,aiDepth).nextState;
+                target = pieces[newState.move.from.board, newState.move.from.x, newState.move.from.z];
+                target.MovePiece(newState.move.to);
+                playerTurn = !playerTurn;
+                return;
+            }
+            if (Input.GetMouseButtonDown(0)) {
+                timeElapsed = Time.time;
+                Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
+                RaycastHit hit;
+                if (Physics.Raycast(ray, out hit)) {  
+                    //Select stage
+
+                    if (hit.transform.tag == "Player" && playerTurn) {
+                        PieceController pc = hit.transform.gameObject.GetComponent<PieceController>();
+                        
+                        HighlightController.DisableAll();
+                        if(!pc.target){
+                            if(target) target.target = false;
+                            target = pc;
+                            target.target = true;
+                            List<Position> moves = pc.GetMoves();
+                            foreach (Position move in moves) {
+                                HighlightPosition(move);
+                            }
+                        }
+                        else {
+                            target.target = false;
+                            target = null;
+                        }
+                    } else if (hit.transform.tag == "Highlight") {
+                        HighlightController.DisableAll();
+                        target.MovePiece(hit.transform.gameObject.GetComponent<HighlightController>().position);
+                        playerTurn = !playerTurn;
+                    } 
+                }
+            }
+        }
+    }
 }

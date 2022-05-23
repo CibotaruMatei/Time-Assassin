@@ -59,19 +59,22 @@ public class PieceController : MonoBehaviour
 
         // add new piece in game
         gm.AddPiece(other, player);
-        // delete current piece and remove it only when moving into the future
         
-        //temporary
-        gm.DeletePiece(position, this);
-        if (other.board >= position.board) {
-            gm.DeletePiece(position, this);
-            return;
+        if(gm.SandsOfTime == 1) {
+            // delete current piece only when moving into the future
+            if (other.board >= position.board) {
+                gm.DeletePiece(position, this);
+                return;
+            }
+            // decrement possible remainingClones
+            if (player)
+                gm.player.remainingClones--;
+            else
+                aim.remainingClones--;
         }
-        // decrement possible remainingClones
-        if (player)
-            gm.player.remainingClones--;
-        else
-            aim.remainingClones--;
+        else {
+            gm.DeletePiece(position, this);
+        }
     }
 
     public List<Position> GetMoves() {

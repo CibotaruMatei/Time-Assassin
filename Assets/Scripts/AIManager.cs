@@ -11,7 +11,7 @@ public class AIManager : MonoBehaviour
     {
         gm = GameObject.Find("GameManager").GetComponent<GameManager>();
     }
-    public State AiMove(int clones)
+    public State AiMove(int clones, int depth)
     {
         PieceController[,,] gamePieces = gm.pieces;
         State state = new State(3, false, clones);
